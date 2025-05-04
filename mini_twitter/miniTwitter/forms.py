@@ -1,13 +1,18 @@
 from django import forms
-from .models import Tweet
+from .models import Tweet, CustomUser
+from django.contrib.auth.forms import UserCreationForm
 
 class TweetForm(forms.ModelForm):
-    content = forms.CharField(widget=forms.Textarea(attrs={
-        'class': 'form-control',
-        'rows': 3,
-        'placeholder': 'O que está acontecendo?'
-    }))
-
     class Meta:
         model = Tweet
-        fields = ['content']
+        fields = ['texto']
+
+class CustomUserForm(UserCreationForm):
+    class Meta:
+        model = CustomUser
+        fields = ['username', 'email', 'password1', 'password2']
+        
+def __init__(self, *args, **kwargs):
+    super().__init__(*args, **kwargs)
+    for field in self.fields.values():
+        field.widget.attrs.update({'class': 'form-control'})
