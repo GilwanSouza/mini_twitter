@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}Confirmar Exclusão{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card mx-auto shadow" style="max-width: 500px;">
+        <div class="card-header bg-danger text-white text-center">
+            <h4>Excluir Tweet</h4>
+        </div>
+        <div class="card-body text-center">
+            <p class="mb-4">Tem certeza de que deseja excluir este tweet?</p>
+            <p class="text-muted">{{ tweet.conteudo }}</p>
+            <form method="POST" class="d-inline">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Sim, excluir</button>
+            </form>
+            <a href="{% url 'index' %}" class="btn btn-secondary ms-2">Cancelar</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

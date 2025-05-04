@@ -17,12 +17,25 @@
             <p class="card-text">{{ tweet.texto }}</p>
             <p class="card-text">
                 <small class="text-muted">
-                    {{ tweet.created_at|date:"d/m/Y H:i" }}
+                    {{ tweet.criado_em|date:"d/m/Y H:i" }}
                 </small>
             </p>
+
+            <form action="{% url 'curtir_tweet' tweet.id %}" method="post" class="d-inline">
+                {% csrf_token %}
+                <button class="btn btn-sm {% if user in tweet.curtidas.all %}btn-danger{% else %}btn-outline-danger{% endif %}">
+                  ❤️ {{ tweet.total_curtidas }}
+                </button>
+            </form>
+        
+            {% if tweet.user == user %}
+                <a href="{% url 'editar_tweet' tweet.id %}" class="btn btn-sm btn-secondary">Editar</a>
+                <a href="{% url 'excluir_tweet' tweet.id %}" class="btn btn-sm btn-danger">Excluir</a>
+            {% endif %}
         </div>
     </div>
 {% empty %}
     <p>Nenhum tweet ainda!</p>
 {% endfor %}
+
 {% endblock %}

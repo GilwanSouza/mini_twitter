@@ -12,7 +12,12 @@ class CustomUser(AbstractUser):
 class Tweet(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='tweets')
     texto = models.CharField(max_length=280)
-    created_at = models.DateTimeField(auto_now_add=True)
+    criado_em = models.DateTimeField(auto_now_add=True)
+    curtidas = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='tweets_curtidos', blank=True)
+
+    @property
+    def total_curtidas(self):
+        return self.curtidas.count()
 
     def __str__(self):
-        return f'{self.user.username}: {self.texto[:50]}'
+        return f'{self.user.username}: {self.texto[:50]} - {self.total_curtidas} curtidas'
