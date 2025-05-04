@@ -4,9 +4,8 @@ from .models import Tweet, CustomUser
 from .forms import TweetForm, CustomUserForm
 from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout
-
 from django.core.paginator import Paginator
-
+from django.db.models import Q
 
 def index(request):
     tweets = Tweet.objects.select_related('user').order_by('-criado_em')
@@ -21,6 +20,19 @@ def perfil_usuario(request, username):
     perfil = get_object_or_404(CustomUser, username=username)
     tweets = Tweet.objects.filter(user=perfil).order_by('-criado_em')
     return render(request, 'perfil_usuario.html', {'perfil': perfil, 'tweets': tweets})
+
+def feed(request):
+    query = request.GET.get('q')
+    tweets = Tweet.objects.all()
+
+    if query: tweets = tweets.filter(Q(texto__icontains=query))
+
+    tweets = tweets.order_by('-criado_em')
+    paginator = Paginator(tweets, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'index.html', {'page_obj': page_obj,'request': request})
 
 @login_required
 def seguir_usuario(request, username):
