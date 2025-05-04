@@ -10,7 +10,7 @@
         </div>
         <div class="card-body text-center">
             <p class="mb-4">Tem certeza de que deseja excluir este tweet?</p>
-            <p class="text-muted">{{ tweet.conteudo }}</p>
+            <p class="text-muted">{{ tweet.texto }}</p>
             <form method="POST" class="d-inline">
                 {% csrf_token %}
                 <button type="submit" class="btn btn-danger">Sim, excluir</button>

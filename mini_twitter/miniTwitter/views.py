@@ -5,9 +5,17 @@ from .forms import TweetForm, CustomUserForm
 from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout
 
+from django.core.paginator import Paginator
+
+
 def index(request):
     tweets = Tweet.objects.select_related('user').order_by('-criado_em')
-    return render(request, 'index.html', {'tweets': tweets})
+    paginator = Paginator(tweets, 10)
+
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'index.html', {'tweets': page_obj, 'page_obj': page_obj})
 
 def perfil_usuario(request, username):
     perfil = get_object_or_404(CustomUser, username=username)
@@ -37,9 +45,9 @@ def curtir_tweet(request, tweet_id):
 
 @login_required
 def editar_tweet(request, tweet_id):
-    tweet = get_object_or_404(Tweet, id=tweet_id, autor=request.user)
+    tweet = get_object_or_404(Tweet, id=tweet_id, user=request.user)
     if request.method == 'POST':
-        conteudo = request.POST.get('conteudo')
+        conteudo = request.POST.get('texto')
         tweet.conteudo = conteudo
         tweet.save()
         return redirect('index')
@@ -47,7 +55,7 @@ def editar_tweet(request, tweet_id):
 
 @login_required
 def excluir_tweet(request, tweet_id):
-    tweet = get_object_or_404(Tweet, id=tweet_id, autor=request.user)
+    tweet = get_object_or_404(Tweet, id=tweet_id, user=request.user)
     if request.method == 'POST':
         tweet.delete()
         return redirect('index')
