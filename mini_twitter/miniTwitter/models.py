@@ -5,6 +5,7 @@ from django.conf import settings
 class CustomUser(AbstractUser):
     data_nascimento = models.DateField(blank=True, null=True)
     nome = models.CharField(max_length=150, blank=True, null=True)
+    seguindo = models.ManyToManyField('self', symmetrical=False, related_name='seguidores', blank=True)
 
     def __str__(self):
         return self.username

@@ -9,6 +9,23 @@ def index(request):
     tweets = Tweet.objects.select_related('user').order_by('-criado_em')
     return render(request, 'index.html', {'tweets': tweets})
 
+def perfil_usuario(request, username):
+    perfil = get_object_or_404(CustomUser, username=username)
+    tweets = Tweet.objects.filter(user=perfil).order_by('-criado_em')
+    return render(request, 'perfil_usuario.html', {'perfil': perfil, 'tweets': tweets})
+
+@login_required
+def seguir_usuario(request, username):
+    alvo = get_object_or_404(CustomUser, username=username)
+    request.user.seguindo.add(alvo)
+    return redirect('perfil_usuario', username=username)
+
+@login_required
+def deixar_de_seguir(request, username):
+    alvo = get_object_or_404(CustomUser, username=username)
+    request.user.seguindo.remove(alvo)
+    return redirect('perfil_usuario', username=username)
+
 @login_required
 def curtir_tweet(request, tweet_id):
     tweet = get_object_or_404(Tweet, id=tweet_id)

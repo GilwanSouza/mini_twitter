@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Perfil de {{ perfil.username }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow">
+        <div class="card-body d-flex justify-content-between align-items-center">
+            <div>
+                <h3 class="mb-1">@{{ perfil.username }}</h3>
+                <p class="mb-0 text-muted">{{ perfil.first_name }} {{ perfil.last_name }}</p>
+            </div>
+
+            {% if user.is_authenticated and user != perfil %}
+                <div>
+                    {% if perfil in user.seguindo.all %}
+                        <a href="{% url 'deixar_de_seguir' perfil.username %}" class="btn btn-outline-danger">Deixar de seguir</a>
+                    {% else %}
+                        <a href="{% url 'seguir_usuario' perfil.username %}" class="btn btn-outline-primary">Seguir</a>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="card-footer text-muted d-flex justify-content-around">
+            <div>
+                <strong>{{ perfil.seguidores.count }}</strong> seguidores
+            </div>
+            <div>
+                <strong>{{ perfil.seguindo.count }}</strong> seguindo
+            </div>
+        </div>
+    </div>
+
+    <hr>
+
+    <h4 class="mt-4">Tweets de {{ perfil.username }}</h4>
+    {% if tweets %}
+        {% for tweet in tweets %}
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <a href="{% url 'perfil_usuario' tweet.user.username %}">@{{ tweet.user.username }}</a>
+                    </h5>
+                    <p class="card-text">{{ tweet.texto }}</p>
+                    <p class="card-text">
+                        <small class="text-muted">{{ tweet.criado_em|date:"d/m/Y H:i" }}</small>
+                    </p>
+
+                    <form action="{% url 'curtir_tweet' tweet.id %}" method="post" class="d-inline">
+                        {% csrf_token %}
+                        <button class="btn btn-sm {% if user in tweet.curtidas.all %}btn-danger{% else %}btn-outline-danger{% endif %}">
+                            ❤️ {{ tweet.total_curtidas }}
+                        </button>
+                    </form>
+
+                    {% if tweet.user == user %}
+                        <a href="{% url 'editar_tweet' tweet.id %}" class="btn btn-sm btn-secondary">Editar</a>
+                        <a href="{% url 'excluir_tweet' tweet.id %}" class="btn btn-sm btn-danger">Excluir</a>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p class="text-muted mt-3">Nenhum tweet ainda.</p>
+    {% endif %}
+</div>
+{% endblock %}

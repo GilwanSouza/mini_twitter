@@ -13,7 +13,11 @@
 {% for tweet in tweets %}
     <div class="card mb-3">
         <div class="card-body">
-            <h5 class="card-title">{{ tweet.user.username }}</h5>
+            <h5 class="card-title">
+                <a href="{% url 'perfil_usuario' tweet.user.username %}" class="text-decoration-none text-primary">
+                    @{{ tweet.user.username }}
+                </a>
+            </h5>
             <p class="card-text">{{ tweet.texto }}</p>
             <p class="card-text">
                 <small class="text-muted">
